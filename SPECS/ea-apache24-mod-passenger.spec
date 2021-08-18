@@ -246,16 +246,6 @@ echo %{buildroot}/var/cpanel/templates/apache2_4/mod_passenger.appconf.default
 echo /var/cpanel/templates/apache2_4/passenger_apps.default
 #/var/cpanel/templates/apache2_4/mod_passenger.appconf.default
 
-mkdir -p %{buildroot}/etc/cpanel/ea4
-echo -n '/usr/bin/ruby' > %{buildroot}/etc/cpanel/ea4/passenger.ruby
-
-# do python3 (and not worry about systems w/ only /usr/bin/python) because:
-#    1. python3 is not EOL
-#    2. /usr/bin/python is no longer a thing in python land
-#    3. if they didn't have this configure their python app is broken anyway
-#    4. They can configure this if they really want /usr/bin/python, /usr/bin/python2, /usr/bin/python3.6, etc
-echo -n "/usr/bin/python3" > %{buildroot}/etc/cpanel/ea4/passenger.python
-
 %if "%{_httpd_modconfdir}" != "%{_httpd_confdir}"
     sed -n /^LoadModule/p passenger.conf > 10-passenger.conf
     sed -i /^LoadModule/d passenger.conf
