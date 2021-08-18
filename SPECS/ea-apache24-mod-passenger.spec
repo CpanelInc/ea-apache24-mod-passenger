@@ -339,7 +339,6 @@ rm -rf %{buildroot}
 /var/cpanel/templates/apache2_4/apache24-mod-passenger.appconf.default
 %{_httpd_moddir}/mod_passenger.so
 %{_bindir}/passenger*
-%dir /var/run/%{scl_prefix}passenger
 %dir %attr(755, root, root) %{_localstatedir}/run/passenger-instreg
 %{passenger_libdir}
 %{passenger_archdir}
