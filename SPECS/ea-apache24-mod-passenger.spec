@@ -169,7 +169,7 @@ mkdir -p build/support/vendor/cxx_hinted_parser
 
 export LD_LIBRARY_PATH=%{_libdir}:$LD_LIBRARY_PATH
 export USE_VENDORED_LIBEV=true
-export USE_VENDORED_LIBUV=false
+export USE_VENDORED_LIBUV=true
 export GEM_PATH=%{gem_dir}:${GEM_PATH:+${GEM_PATH}}${GEM_PATH:-`ruby -e "print Gem.path.join(':')"`}
 CFLAGS="${CFLAGS:-%optflags} -I/opt/cpanel/ea-openssl11/include -I/usr/include" ; export CFLAGS ;
 CXXFLAGS="${CXXFLAGS:-%optflags}" ; export CXXFLAGS ;
@@ -210,7 +210,7 @@ echo "INSTALL BEGINS" `pwd`
 cd passenger-release-%{version}
 
 export USE_VENDORED_LIBEV=true
-export USE_VENDORED_LIBUV=false
+export USE_VENDORED_LIBUV=true
 
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
@@ -240,7 +240,7 @@ mkdir -p %{buildroot}/var/cpanel/templates/apache2_4
 # keep version agnostic name for old ULCs :(
 install -m 0640 %{SOURCE2} %{buildroot}/var/cpanel/templates/apache2_4/passenger_apps.default
 # have version/package specific name for new ULCs :)
-install -m 0640 %{SOURCE2} %{buildroot}/var/cpanel/templates/apache2_4/mod_passenger.appconf.default
+install -m 0640 %{SOURCE2} %{buildroot}/var/cpanel/templates/apache2_4/apache24-mod-passenger.appconf.default
 
 echo %{buildroot}/var/cpanel/templates/apache2_4/mod_passenger.appconf.default
 echo /var/cpanel/templates/apache2_4/passenger_apps.default
@@ -277,12 +277,6 @@ sed -i 's|%{passenger_archdir}/support-binaries|%{passenger_agentsdir}|g' \
 
 # Instance registry to track apps
 mkdir -p %{buildroot}%{_localstatedir}/run/passenger-instreg
-
-# tmpfiles.d
-mkdir -p %{buildroot}/var/run
-mkdir -p %{buildroot}%{_root_prefix}/lib/tmpfiles.d
-install -m 0644 %{SOURCE2} %{buildroot}%{_root_prefix}/lib/tmpfiles.d/%{scl_prefix}passenger.conf
-install -d -m 0755 %{buildroot}/var/run/%{scl_prefix}passenger
 
 # Install man pages into the proper location.
 mkdir -p %{buildroot}%{_mandir}/man1
@@ -342,14 +336,9 @@ rm -rf %{buildroot}
 %config(noreplace) %{_httpd_confdir}/*.conf
 %endif
 /var/cpanel/templates/apache2_4/passenger_apps.default
-/var/cpanel/templates/apache2_4/mod_passenger.appconf.default
-/etc/cpanel/ea4/passenger.ruby
-%config(noreplace) /etc/cpanel/ea4/passenger.python
+/var/cpanel/templates/apache2_4/apache24-mod-passenger.appconf.default
 %{_httpd_moddir}/mod_passenger.so
 %{_bindir}/passenger*
-%if 0%{?rhel} > 6
-%{_root_prefix}/lib/tmpfiles.d/*.conf
-%endif
 %dir /var/run/%{scl_prefix}passenger
 %dir %attr(755, root, root) %{_localstatedir}/run/passenger-instreg
 %{passenger_libdir}
@@ -365,6 +354,6 @@ rm -rf %{buildroot}
 %doc LICENSE CONTRIBUTORS CHANGELOG
 
 %changelog
-* Fri Aug 13 2021 Julian Brown <julian.brown@webpros.com> - 6.0.9-1
+* Fri Aug 13 2021 Julian Brown <julian.brown@webpros.com> - 6.0.10-1
 - ZC-9201 - Initial Release
 
