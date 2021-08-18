@@ -52,7 +52,6 @@ URL: https://www.phusionpassenger.com
 Source1: passenger.logrotate
 Source2: rubygem-passenger.tmpfiles
 Source10: apache-passenger.conf.in
-Source12: config.json
 Source14: passenger_apps.default
 
 BuildRequires: tree
