@@ -240,7 +240,7 @@ mkdir -p %{buildroot}/var/cpanel/templates/apache2_4
 # keep version agnostic name for old ULCs :(
 install -m 0640 %{SOURCE2} %{buildroot}/var/cpanel/templates/apache2_4/passenger_apps.default
 # have version/package specific name for new ULCs :)
-install -m 0640 %{SOURCE2} %{buildroot}/var/cpanel/templates/apache2_4/apache24-mod-passenger.appconf.default
+install -m 0640 %{SOURCE2} %{buildroot}/var/cpanel/templates/apache2_4/ruby-system-mod_passenger.appconf.default
 
 echo %{buildroot}/var/cpanel/templates/apache2_4/mod_passenger.appconf.default
 echo /var/cpanel/templates/apache2_4/passenger_apps.default
@@ -336,7 +336,7 @@ rm -rf %{buildroot}
 %config(noreplace) %{_httpd_confdir}/*.conf
 %endif
 /var/cpanel/templates/apache2_4/passenger_apps.default
-/var/cpanel/templates/apache2_4/apache24-mod-passenger.appconf.default
+/var/cpanel/templates/apache2_4/ruby-system-mod_passenger.appconf.default
 %{_httpd_moddir}/mod_passenger.so
 %{_bindir}/passenger*
 %dir %attr(755, root, root) %{_localstatedir}/run/passenger-instreg
