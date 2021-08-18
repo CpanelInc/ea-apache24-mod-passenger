@@ -89,8 +89,12 @@ Requires: ea-openssl11
 Requires: ea-nghttp2
 Requires: ea-libnghttp2
 Requires: libuv
+Requires: ea-passenger-runtime
 
 Provides: bundled(boost) = %{bundled_boost_version}
+
+Provides: apache24-passenger
+Conflicts: apache24-passenger
 
 %description
 Phusion Passenger(r) is a web server and application server, designed to be fast,
