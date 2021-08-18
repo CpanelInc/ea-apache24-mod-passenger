@@ -49,10 +49,8 @@ Group: System Environment/Daemons
 License: Boost and BSD and BSD with advertising and MIT and zlib
 URL: https://www.phusionpassenger.com
 
-Source1: passenger.logrotate
-Source2: rubygem-passenger.tmpfiles
-Source10: apache-passenger.conf.in
-Source14: passenger_apps.default
+Source1: apache-passenger.conf.in
+Source2: passenger_apps.default
 
 BuildRequires: tree
 
@@ -93,6 +91,8 @@ Provides: bundled(boost) = %{bundled_boost_version}
 
 Provides: apache24-passenger
 Conflicts: apache24-passenger
+
+Requires: ea-passenger-runtime
 
 %description
 Phusion Passenger(r) is a web server and application server, designed to be fast,
@@ -152,7 +152,8 @@ echo _httpd_moddir        %{_httpd_moddir}
 echo _root_includedir     %{_root_includedir}
 echo _root_sysconfdir     %{_root_sysconfdir}
 echo _root_libdir         %{_root_libdir}
-echo SOURCE14             %{SOURCE14}
+echo SOURCE1             %{SOURCE1}
+echo SOURCE2             %{SOURCE2}
 echo _bindir              %{_bindir}
 echo _root_prefix         %{_root_prefix}
 echo _scl_prefix          %{_scl_prefix}
@@ -230,18 +231,17 @@ install -pm 0755 buildout/apache2/mod_passenger.so %{buildroot}/%{_httpd_moddir}
 
 # Install Apache config.
 mkdir -p %{buildroot}%{_httpd_confdir} %{buildroot}%{_httpd_modconfdir}
-sed -e 's|@PASSENGERROOT@|%{passenger_libdir}/phusion_passenger/locations.ini|g' %{SOURCE10} > passenger.conf
+sed -e 's|@PASSENGERROOT@|%{passenger_libdir}/phusion_passenger/locations.ini|g' %{SOURCE1} > passenger.conf
 sed -i 's|@PASSENGERDEFAULTRUBY@|/usr/bin/ruby|g' passenger.conf
 sed -i 's|@PASSENGERSO@|%{_httpd_moddir}/mod_passenger.so|g' passenger.conf
 sed -i 's|@PASSENGERINSTANCEDIR@|%{_localstatedir}/run/passenger-instreg|g' passenger.conf
 
 mkdir -p %{buildroot}/var/cpanel/templates/apache2_4
 # keep version agnostic name for old ULCs :(
-install -m 0640 %{SOURCE14} %{buildroot}/var/cpanel/templates/apache2_4/passenger_apps.default
+install -m 0640 %{SOURCE2} %{buildroot}/var/cpanel/templates/apache2_4/passenger_apps.default
 # have version/package specific name for new ULCs :)
-install -m 0640 %{SOURCE14} %{buildroot}/var/cpanel/templates/apache2_4/mod_passenger.appconf.default
+install -m 0640 %{SOURCE2} %{buildroot}/var/cpanel/templates/apache2_4/mod_passenger.appconf.default
 
-echo SOURCE14 %{SOURCE14}
 echo %{buildroot}/var/cpanel/templates/apache2_4/mod_passenger.appconf.default
 echo /var/cpanel/templates/apache2_4/passenger_apps.default
 #/var/cpanel/templates/apache2_4/mod_passenger.appconf.default
@@ -259,10 +259,10 @@ echo -n "/usr/bin/python3" > %{buildroot}/etc/cpanel/ea4/passenger.python
 %if "%{_httpd_modconfdir}" != "%{_httpd_confdir}"
     sed -n /^LoadModule/p passenger.conf > 10-passenger.conf
     sed -i /^LoadModule/d passenger.conf
-    touch -r %{SOURCE10} 10-passenger.conf
+    touch -r %{SOURCE1} 10-passenger.conf
     install -pm 0644 10-passenger.conf %{buildroot}%{_httpd_modconfdir}/passenger.conf
 %endif
-touch -r %{SOURCE10} passenger.conf
+touch -r %{SOURCE1} passenger.conf
 install -pm 0644 passenger.conf %{buildroot}%{_httpd_confdir}/passenger.conf
 
 # Install wrapper script to allow using the SCL Ruby binary via apache
