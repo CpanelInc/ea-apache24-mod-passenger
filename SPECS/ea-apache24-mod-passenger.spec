@@ -241,6 +241,8 @@ mkdir -p %{buildroot}/var/cpanel/templates/apache2_4
 install -m 0640 %{SOURCE2} %{buildroot}/var/cpanel/templates/apache2_4/passenger_apps.default
 # have version/package specific name for new ULCs :)
 install -m 0640 %{SOURCE2} %{buildroot}/var/cpanel/templates/apache2_4/ruby-system-mod_passenger.appconf.default
+# support < 100 that did not do `-system` for non-versioned rubies
+install -m 0640 %{SOURCE2} %{buildroot}/var/cpanel/templates/apache2_4/rubyby-mod_passenger.appconf.default
 
 echo %{buildroot}/var/cpanel/templates/apache2_4/mod_passenger.appconf.default
 echo /var/cpanel/templates/apache2_4/passenger_apps.default
@@ -327,6 +329,7 @@ rm -rf %{buildroot}
 %endif
 /var/cpanel/templates/apache2_4/passenger_apps.default
 /var/cpanel/templates/apache2_4/ruby-system-mod_passenger.appconf.default
+/var/cpanel/templates/apache2_4/rubyby-mod_passenger.appconf.default
 %{_httpd_moddir}/mod_passenger.so
 %{_bindir}/passenger*
 %dir %attr(755, root, root) %{_localstatedir}/run/passenger-instreg
