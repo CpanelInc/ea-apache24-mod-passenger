@@ -49,11 +49,8 @@ Group: System Environment/Daemons
 License: Boost and BSD and BSD with advertising and MIT and zlib
 URL: https://www.phusionpassenger.com
 
-Source1: passenger.logrotate
-Source2: rubygem-passenger.tmpfiles
-Source10: apache-passenger.conf.in
-Source12: config.json
-Source14: passenger_apps.default
+Source1: apache-passenger.conf.in
+Source2: passenger_apps.default
 
 BuildRequires: tree
 
@@ -94,6 +91,8 @@ Provides: bundled(boost) = %{bundled_boost_version}
 
 Provides: apache24-passenger
 Conflicts: apache24-passenger
+
+Requires: ea-passenger-runtime
 
 %description
 Phusion Passenger(r) is a web server and application server, designed to be fast,
@@ -153,7 +152,8 @@ echo _httpd_moddir        %{_httpd_moddir}
 echo _root_includedir     %{_root_includedir}
 echo _root_sysconfdir     %{_root_sysconfdir}
 echo _root_libdir         %{_root_libdir}
-echo SOURCE14             %{SOURCE14}
+echo SOURCE1             %{SOURCE1}
+echo SOURCE2             %{SOURCE2}
 echo _bindir              %{_bindir}
 echo _root_prefix         %{_root_prefix}
 echo _scl_prefix          %{_scl_prefix}
@@ -169,7 +169,7 @@ mkdir -p build/support/vendor/cxx_hinted_parser
 
 export LD_LIBRARY_PATH=%{_libdir}:$LD_LIBRARY_PATH
 export USE_VENDORED_LIBEV=true
-export USE_VENDORED_LIBUV=false
+export USE_VENDORED_LIBUV=true
 export GEM_PATH=%{gem_dir}:${GEM_PATH:+${GEM_PATH}}${GEM_PATH:-`ruby -e "print Gem.path.join(':')"`}
 CFLAGS="${CFLAGS:-%optflags} -I/opt/cpanel/ea-openssl11/include -I/usr/include" ; export CFLAGS ;
 CXXFLAGS="${CXXFLAGS:-%optflags}" ; export CXXFLAGS ;
@@ -210,7 +210,7 @@ echo "INSTALL BEGINS" `pwd`
 cd passenger-release-%{version}
 
 export USE_VENDORED_LIBEV=true
-export USE_VENDORED_LIBUV=false
+export USE_VENDORED_LIBUV=true
 
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
@@ -231,39 +231,28 @@ install -pm 0755 buildout/apache2/mod_passenger.so %{buildroot}/%{_httpd_moddir}
 
 # Install Apache config.
 mkdir -p %{buildroot}%{_httpd_confdir} %{buildroot}%{_httpd_modconfdir}
-sed -e 's|@PASSENGERROOT@|%{passenger_libdir}/phusion_passenger/locations.ini|g' %{SOURCE10} > passenger.conf
+sed -e 's|@PASSENGERROOT@|%{passenger_libdir}/phusion_passenger/locations.ini|g' %{SOURCE1} > passenger.conf
 sed -i 's|@PASSENGERDEFAULTRUBY@|/usr/bin/ruby|g' passenger.conf
 sed -i 's|@PASSENGERSO@|%{_httpd_moddir}/mod_passenger.so|g' passenger.conf
 sed -i 's|@PASSENGERINSTANCEDIR@|%{_localstatedir}/run/passenger-instreg|g' passenger.conf
 
 mkdir -p %{buildroot}/var/cpanel/templates/apache2_4
 # keep version agnostic name for old ULCs :(
-install -m 0640 %{SOURCE14} %{buildroot}/var/cpanel/templates/apache2_4/passenger_apps.default
+install -m 0640 %{SOURCE2} %{buildroot}/var/cpanel/templates/apache2_4/passenger_apps.default
 # have version/package specific name for new ULCs :)
-install -m 0640 %{SOURCE14} %{buildroot}/var/cpanel/templates/apache2_4/mod_passenger.appconf.default
+install -m 0640 %{SOURCE2} %{buildroot}/var/cpanel/templates/apache2_4/ruby-system-mod_passenger.appconf.default
 
-echo SOURCE14 %{SOURCE14}
 echo %{buildroot}/var/cpanel/templates/apache2_4/mod_passenger.appconf.default
 echo /var/cpanel/templates/apache2_4/passenger_apps.default
 #/var/cpanel/templates/apache2_4/mod_passenger.appconf.default
 
-mkdir -p %{buildroot}/etc/cpanel/ea4
-echo -n '/usr/bin/ruby' > %{buildroot}/etc/cpanel/ea4/passenger.ruby
-
-# do python3 (and not worry about systems w/ only /usr/bin/python) because:
-#    1. python3 is not EOL
-#    2. /usr/bin/python is no longer a thing in python land
-#    3. if they didn't have this configure their python app is broken anyway
-#    4. They can configure this if they really want /usr/bin/python, /usr/bin/python2, /usr/bin/python3.6, etc
-echo -n "/usr/bin/python3" > %{buildroot}/etc/cpanel/ea4/passenger.python
-
 %if "%{_httpd_modconfdir}" != "%{_httpd_confdir}"
     sed -n /^LoadModule/p passenger.conf > 10-passenger.conf
     sed -i /^LoadModule/d passenger.conf
-    touch -r %{SOURCE10} 10-passenger.conf
+    touch -r %{SOURCE1} 10-passenger.conf
     install -pm 0644 10-passenger.conf %{buildroot}%{_httpd_modconfdir}/passenger.conf
 %endif
-touch -r %{SOURCE10} passenger.conf
+touch -r %{SOURCE1} passenger.conf
 install -pm 0644 passenger.conf %{buildroot}%{_httpd_confdir}/passenger.conf
 
 # Install wrapper script to allow using the SCL Ruby binary via apache
@@ -278,12 +267,6 @@ sed -i 's|%{passenger_archdir}/support-binaries|%{passenger_agentsdir}|g' \
 
 # Instance registry to track apps
 mkdir -p %{buildroot}%{_localstatedir}/run/passenger-instreg
-
-# tmpfiles.d
-mkdir -p %{buildroot}/var/run
-mkdir -p %{buildroot}%{_root_prefix}/lib/tmpfiles.d
-install -m 0644 %{SOURCE2} %{buildroot}%{_root_prefix}/lib/tmpfiles.d/%{scl_prefix}passenger.conf
-install -d -m 0755 %{buildroot}/var/run/%{scl_prefix}passenger
 
 # Install man pages into the proper location.
 mkdir -p %{buildroot}%{_mandir}/man1
@@ -343,15 +326,9 @@ rm -rf %{buildroot}
 %config(noreplace) %{_httpd_confdir}/*.conf
 %endif
 /var/cpanel/templates/apache2_4/passenger_apps.default
-/var/cpanel/templates/apache2_4/mod_passenger.appconf.default
-/etc/cpanel/ea4/passenger.ruby
-%config(noreplace) /etc/cpanel/ea4/passenger.python
+/var/cpanel/templates/apache2_4/ruby-system-mod_passenger.appconf.default
 %{_httpd_moddir}/mod_passenger.so
 %{_bindir}/passenger*
-%if 0%{?rhel} > 6
-%{_root_prefix}/lib/tmpfiles.d/*.conf
-%endif
-%dir /var/run/%{scl_prefix}passenger
 %dir %attr(755, root, root) %{_localstatedir}/run/passenger-instreg
 %{passenger_libdir}
 %{passenger_archdir}
@@ -366,6 +343,6 @@ rm -rf %{buildroot}
 %doc LICENSE CONTRIBUTORS CHANGELOG
 
 %changelog
-* Fri Aug 13 2021 Julian Brown <julian.brown@webpros.com> - 6.0.9-1
+* Fri Aug 13 2021 Julian Brown <julian.brown@webpros.com> - 6.0.10-1
 - ZC-9201 - Initial Release
 
