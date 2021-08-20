@@ -1,24 +1,7 @@
 %global debug_package %{nil}
 
 # Defining the package namespace
-%global ns_name ea
-%global ns_dir /opt/cpanel
-%global pkg apache24
 %global bundled_boost_version 1.60.0
-
-# Force Software Collections on
-%global _scl_prefix %{ns_dir}
-%global scl %{ns_name}-%{pkg}
-# HACK: OBS Doesn't support macros in BuildRequires statements, so we have
-#       to hard-code it here.
-# https://en.opensuse.org/openSUSE:Specfile_guidelines#BuildRequires
-%global scl_prefix %{scl}-
-
-# This line does magic and fills in many vars values
-%{?scl:%scl_package mod-passenger}
-
-# this actually Requires: ea-passenger-runtime
-%global scl_runtime ea-passenger-runtime
 
 %global passenger_libdir    %{_datadir}/passenger
 %global passenger_archdir   %{_libdir}/passenger
@@ -28,16 +11,16 @@
 # Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4590 for more details
 %define release_prefix 1
 
-%global _httpd_mmn         %(cat %{_root_includedir}/apache2/.mmn 2>/dev/null || echo missing-ea-apache24-devel)
-%global _httpd_confdir     %{_root_sysconfdir}/apache2/conf.d
-%global _httpd_modconfdir  %{_root_sysconfdir}/apache2/conf.modules.d
-%global _httpd_moddir      %{_root_libdir}/apache2/modules
+%global _httpd_mmn         %(cat %{_includedir}/apache2/.mmn 2>/dev/null || echo missing-ea-apache24-devel)
+%global _httpd_confdir     %{_sysconfdir}/apache2/conf.d
+%global _httpd_modconfdir  %{_sysconfdir}/apache2/conf.modules.d
+%global _httpd_moddir      %{_libdir}/apache2/modules
 
 %define ea_openssl_ver 1.1.1d-1
 %define ea_libcurl_ver 7.68.0-2
 
 Summary: Phusion Passenger application server
-Name: %{scl_prefix}mod-passenger
+Name: ea-apache24-mod-passenger
 Version: 6.0.10
 Release: %{release_prefix}%{?dist}.cpanel
 Group: System Environment/Daemons
@@ -75,8 +58,6 @@ BuildRequires: pcre-devel
 BuildRequires: libuv
 BuildRequires: libuv-devel
 
-BuildRequires: scl-utils
-BuildRequires: scl-utils-build
 BuildRequires: ea-passenger-src
 
 Requires: python3
@@ -149,14 +130,9 @@ echo _httpd_mmn           %{_httpd_mmn}
 echo _httpd_confdir       %{_httpd_confdir}
 echo _httpd_modconfdir    %{_httpd_modconfdir}
 echo _httpd_moddir        %{_httpd_moddir}
-echo _root_includedir     %{_root_includedir}
-echo _root_sysconfdir     %{_root_sysconfdir}
-echo _root_libdir         %{_root_libdir}
 echo SOURCE1             %{SOURCE1}
 echo SOURCE2             %{SOURCE2}
 echo _bindir              %{_bindir}
-echo _root_prefix         %{_root_prefix}
-echo _scl_prefix          %{_scl_prefix}
 echo _localstatedir       %{_localstatedie}
 echo passenger_libdir     %{passenger_libdir}
 echo passenger_archdir    %{passenger_archdir}
@@ -257,9 +233,6 @@ echo /var/cpanel/templates/apache2_4/passenger_apps.default
 touch -r %{SOURCE1} passenger.conf
 install -pm 0644 passenger.conf %{buildroot}%{_httpd_confdir}/passenger.conf
 
-# Install wrapper script to allow using the SCL Ruby binary via apache
-%{__mkdir_p} %{buildroot}%{_libexecdir}/
-
 # Move agents to libexec
 mkdir -p %{buildroot}/%{passenger_agentsdir}
 mv %{buildroot}/%{passenger_archdir}/support-binaries/* %{buildroot}/%{passenger_agentsdir}
@@ -313,9 +286,6 @@ cp $BUILD/CHANGELOG .
 rm -rf /usr/src/debug/build-id/*
 rm -rf /usr/src/debug/passenger-release-%{version}
 
-sed -i 's:#!/opt/cpanel/ea-apache24/root/usr/bin/ruby:#!/usr/bin/ruby:' %{buildroot}/opt/cpanel/ea-apache24/root/usr/sbin/passenger-memory-stats
-sed -i 's:#!/opt/cpanel/ea-apache24/root/usr/bin/ruby:#!/usr/bin/ruby:' %{buildroot}/opt/cpanel/ea-apache24/root/usr/sbin/passenger-status
-
 cd $MYPWD
 
 
@@ -344,6 +314,9 @@ rm -rf %{buildroot}
 %files doc
 %doc %{_docdir}/passenger
 %doc LICENSE CONTRIBUTORS CHANGELOG
+%doc /opt/cpanel/ea-apache24/root/usr/share/doc/ea-apache24-mod-passenger-doc-%{version}/LICENSE
+%doc /opt/cpanel/ea-apache24/root/usr/share/doc/ea-apache24-mod-passenger-doc-%{version}/CONTRIBUTORS
+%doc /opt/cpanel/ea-apache24/root/usr/share/doc/ea-apache24-mod-passenger-doc-%{version}/CHANGELOG
 
 %changelog
 * Fri Aug 13 2021 Julian Brown <julian.brown@webpros.com> - 6.0.10-1
