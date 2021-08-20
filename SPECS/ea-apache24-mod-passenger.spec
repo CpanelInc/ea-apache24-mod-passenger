@@ -181,7 +181,7 @@ EXTRA_CXX_LDFLAGS="-L/usr/lib64 -L/opt/cpanel/ea-brotli/lib -L/opt/cpanel/ea-ope
 
 FFLAGS="${FFLAGS:-%optflags}" ; export FFLAGS;
 
-export EXTRA_CXXFLAGS="-I/opt/cpanel/ea-broli/include -I/opt/cpanel/ea-openssl11/include -I/opt/cpanel/libcurl/include -I/usr/include $EXTRA_CXX_LDFLAGS"
+export EXTRA_CXXFLAGS="-I/opt/cpanel/ea-brotli/include -I/opt/cpanel/ea-openssl11/include -I/opt/cpanel/libcurl/include -I/usr/include $EXTRA_CXX_LDFLAGS"
 
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
