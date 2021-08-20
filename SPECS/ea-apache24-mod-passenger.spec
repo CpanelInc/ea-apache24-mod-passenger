@@ -202,10 +202,6 @@ export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-echo "RPATHCHECK"
-find /opt/cpanel -name "lib" -type d -print 
-find /opt/cpanel -name "lib64" -type d -print 
-
 rake fakeroot \
     NATIVE_PACKAGING_METHOD=rpm \
     FS_PREFIX=%{_prefix} \
