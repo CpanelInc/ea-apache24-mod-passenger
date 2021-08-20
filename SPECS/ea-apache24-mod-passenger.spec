@@ -316,8 +316,7 @@ cp $BUILD/CHANGELOG .
 rm -rf /usr/src/debug/build-id/*
 rm -rf /usr/src/debug/passenger-release-%{version}
 
-echo "PASSENGERLIBDIR"
-find %{buildroot}%{passenger_libdir} -type f -print | sort
+rm -rf %{buildroot}%{passenger_archdir}/passenger_native_support.so
 
 cd $MYPWD
 
@@ -336,7 +335,6 @@ rm -rf %{buildroot}
 %{_bindir}/passenger*
 %dir %attr(755, root, root) %{_localstatedir}/run/passenger-instreg
 %{passenger_libdir}
-%{passenger_archdir}
 %{passenger_agentsdir}
 %{_sbindir}/*
 %{_mandir}/man1/*
