@@ -164,6 +164,7 @@ echo _mandir              %{_mandir}
 
 mkdir -p build/support/vendor/cxx_hinted_parser
 
+%if 0%{?rhel} < 8
 export LD_LIBRARY_PATH=%{_libdir}:$LD_LIBRARY_PATH
 export USE_VENDORED_LIBEV=true
 export USE_VENDORED_LIBUV=true
@@ -182,6 +183,20 @@ EXTRA_CXX_LDFLAGS="-L/usr/lib64 -L/opt/cpanel/ea-brotli/lib -L/opt/cpanel/ea-ope
 FFLAGS="${FFLAGS:-%optflags}" ; export FFLAGS;
 
 export EXTRA_CXXFLAGS="-I/opt/cpanel/ea-brotli/include -I/opt/cpanel/ea-openssl11/include -I/opt/cpanel/libcurl/include -I/usr/include $EXTRA_CXX_LDFLAGS"
+%else
+# this side is untested
+
+export LD_LIBRARY_PATH=%{_libdir}:$LD_LIBRARY_PATH
+export USE_VENDORED_LIBEV=true
+export USE_VENDORED_LIBUV=true
+export GEM_PATH=%{gem_dir}:${GEM_PATH:+${GEM_PATH}}${GEM_PATH:-`ruby -e "print Gem.path.join(':')"`}
+CFLAGS="${CFLAGS:-%optflags} -I/usr/include" ; export CFLAGS ;
+CXXFLAGS="${CXXFLAGS:-%optflags}" ; export CXXFLAGS ;
+
+EXTRA_CXX_LDFLAGS="-L/usr/lib64 -lcurl -lssl -lcrypto -lgssapi_krb5 -lkrb5 -lk5crypto -lkrb5support -lssl -lcrypto -lssl -lcrypto -lbrotlidec -lbrotlienc -lbrotlicommon -lssl -lcrypto -lssl -lcrypto -lssl -lcrypto -lssl -lcrypto -lssl -lcrypto "; export EXTRA_CXX_LDFLAGS;
+
+FFLAGS="${FFLAGS:-%optflags}" ; export FFLAGS;
+%endif
 
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
