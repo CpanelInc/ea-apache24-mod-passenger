@@ -6,7 +6,6 @@
 %global passenger_libdir    %{_datadir}/passenger
 %global passenger_archdir   %{_libdir}/passenger
 %global passenger_agentsdir %{_libexecdir}/passenger
-%define ruby_vendorlibdir   %(ruby -rrbconfig -e 'puts RbConfig::CONFIG[%q|vendorlibdir|]')
 
 # Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4590 for more details
 %define release_prefix 1
@@ -44,29 +43,47 @@ BuildRequires: rubygem-rake
 BuildRequires: rubygem-rake-compiler
 BuildRequires: perl
 BuildRequires: curl
-BuildRequires: libcurl
-BuildRequires: libcurl-devel
-BuildRequires: ea-brotli
-BuildRequires: ea-brotli-devel
-BuildRequires: ea-openssl11
-BuildRequires: ea-openssl11-devel
-BuildRequires: ea-nghttp2
-BuildRequires: ea-libnghttp2
 BuildRequires: python3
 BuildRequires: zlib-devel
 BuildRequires: pcre-devel
-BuildRequires: libuv
-BuildRequires: libuv-devel
+BuildRequires: ea-apr
+BuildRequires: ea-apr-devel
+BuildRequires: ea-apr-util
+BuildRequires: ea-apr-util-devel
 
 BuildRequires: ea-passenger-src
 
+BuildRequires: ea-apache24-devel
+%if 0%{?rhel} < 8
+BuildRequires: ea-brotli
+BuildRequires: ea-brotli-devel
+BuildRequires: ea-libcurl >= %{ea_libcurl_ver}
+BuildRequires: ea-libcurl-devel >= %{ea_libcurl_ver}
+BuildRequires: ea-openssl11 >= %{ea_openssl_ver}
+BuildRequires: ea-openssl11-devel >= %{ea_openssl_ver}
+%else
+BuildRequires: brotli
+BuildRequires: brotli-devel
+BuildRequires: libcurl
+BuildRequires: libcurl-devel
+BuildRequires: openssl
+BuildRequires: openssl-devel
+%endif
+
 Requires: python3
-Requires: libcurl
 Requires: ruby
-Requires: ea-openssl11
-Requires: ea-nghttp2
-Requires: ea-libnghttp2
-Requires: libuv
+Requires: ea-apr
+Requires: ea-apr-util
+
+%if 0%{?rhel} < 8
+Requires: ea-brotli
+Requires: ea-libcurl >= %{ea_libcurl_ver}
+Requires: ea-openssl11 >= %{ea_openssl_ver}
+%else
+Requires: brotli
+Requires: libcurl
+Requires: openssl
+%endif
 
 Provides: bundled(boost) = %{bundled_boost_version}
 
@@ -137,23 +154,44 @@ echo _localstatedir       %{_localstatedie}
 echo passenger_libdir     %{passenger_libdir}
 echo passenger_archdir    %{passenger_archdir}
 echo passenger_agentsdir  %{passenger_agentsdir}
-echo ruby_vendorlibdir    %{ruby_vendorlibdir}
 echo _sbindir             %{_sbindir}
 echo _mandir              %{_mandir}
 
 mkdir -p build/support/vendor/cxx_hinted_parser
 
+%if 0%{?rhel} < 8
 export LD_LIBRARY_PATH=%{_libdir}:$LD_LIBRARY_PATH
 export USE_VENDORED_LIBEV=true
 export USE_VENDORED_LIBUV=true
 export GEM_PATH=%{gem_dir}:${GEM_PATH:+${GEM_PATH}}${GEM_PATH:-`ruby -e "print Gem.path.join(':')"`}
-CFLAGS="${CFLAGS:-%optflags} -I/opt/cpanel/ea-openssl11/include -I/usr/include" ; export CFLAGS ;
+CFLAGS="${CFLAGS:-%optflags} -I/opt/cpanel/ea-brotli/include -I/opt/cpanel/ea-openssl11/include -I/opt/cpanel/libcurl/include -I/usr/include" ; export CFLAGS ;
 CXXFLAGS="${CXXFLAGS:-%optflags}" ; export CXXFLAGS ;
-EXTRA_CXX_LDFLAGS="-L/usr/lib64 -L/opt/cpanel/ea-openssl11/lib -L/usr/lib64 -lcurl -lssl -lcrypto -lgssapi_krb5 -lkrb5 -lk5crypto -lkrb5support -lssl -lcrypto -lssl -lcrypto -Wl,-rpath=%{_libdir},--enable-new-dtags -lssl -lcrypto -lssl -lcrypto -lssl -lcrypto -lssl -lcrypto -lssl -lcrypto "; export EXTRA_CXX_LDFLAGS;
+RPATH=""
+RPATH="$RPATH -Wl,-rpath=/opt/cpanel/ea-brotli/lib"
+RPATH="$RPATH -Wl,-rpath=/opt/cpanel/ea-openssl11/lib"
+RPATH="$RPATH -Wl,-rpath=/opt/cpanel/libcurl/lib64"
+RPATH="$RPATH -Wl,-rpath=/opt/cpanel/ea-apr16/lib64"
+RPATH="$RPATH -Wl,-rpath=%{_libdir},--enable-new-dtags"
+
+EXTRA_CXX_LDFLAGS="-L/usr/lib64 -L/opt/cpanel/ea-brotli/lib -L/opt/cpanel/ea-openssl11/lib -L/opt/cpanel/libcurl/lib64 -L/usr/lib64 $RPATH -lcurl -lssl -lcrypto -lgssapi_krb5 -lkrb5 -lk5crypto -lkrb5support -lssl -lcrypto -lssl -lcrypto -lbrotlidec -lbrotlienc -lbrotlicommon -lssl -lcrypto -lssl -lcrypto -lssl -lcrypto -lssl -lcrypto -lssl -lcrypto "; export EXTRA_CXX_LDFLAGS;
 
 FFLAGS="${FFLAGS:-%optflags}" ; export FFLAGS;
 
-export EXTRA_CXXFLAGS="-I/opt/cpanel/ea-openssl11/include -I/usr/include"
+export EXTRA_CXXFLAGS="-I/opt/cpanel/ea-brotli/include -I/opt/cpanel/ea-openssl11/include -I/opt/cpanel/libcurl/include -I/usr/include $EXTRA_CXX_LDFLAGS"
+%else
+# this side is untested
+
+export LD_LIBRARY_PATH=%{_libdir}:$LD_LIBRARY_PATH
+export USE_VENDORED_LIBEV=true
+export USE_VENDORED_LIBUV=true
+export GEM_PATH=%{gem_dir}:${GEM_PATH:+${GEM_PATH}}${GEM_PATH:-`ruby -e "print Gem.path.join(':')"`}
+CFLAGS="${CFLAGS:-%optflags} -I/usr/include" ; export CFLAGS ;
+CXXFLAGS="${CXXFLAGS:-%optflags}" ; export CXXFLAGS ;
+
+EXTRA_CXX_LDFLAGS="-L/usr/lib64 -lcurl -lssl -lcrypto -lgssapi_krb5 -lkrb5 -lk5crypto -lkrb5support -lssl -lcrypto -lssl -lcrypto -lbrotlidec -lbrotlienc -lbrotlicommon -lssl -lcrypto -lssl -lcrypto -lssl -lcrypto -lssl -lcrypto -lssl -lcrypto "; export EXTRA_CXX_LDFLAGS;
+
+FFLAGS="${FFLAGS:-%optflags}" ; export FFLAGS;
+%endif
 
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
@@ -180,7 +218,6 @@ cd $MYPWD
 %install
 set -x
 
-MYPWD=`pwd`
 echo "INSTALL BEGINS" `pwd`
 
 cd passenger-release-%{version}
@@ -267,8 +304,6 @@ rm -rf %{buildroot}%{passenger_archdir}/nginx_dynamic
 rm -rf %{buildroot}%{_libdir}/passenger/common
 rm -rf %{buildroot}%{_bindir}/passenger-install-*-module
 
-mkdir -p %{buildroot}%{ruby_vendorlibdir}/passenger
-cp %{buildroot}/%{passenger_archdir}/*.so %{buildroot}%{ruby_vendorlibdir}/passenger/
 cd -
 
 BUILD=/home/abuild/rpmbuild/BUILD/passenger-release-%{version}
@@ -286,8 +321,7 @@ cp $BUILD/CHANGELOG .
 rm -rf /usr/src/debug/build-id/*
 rm -rf /usr/src/debug/passenger-release-%{version}
 
-cd $MYPWD
-
+rm -rf %{buildroot}%{passenger_archdir}/passenger_native_support.so
 
 %clean
 rm -rf %{buildroot}
@@ -304,12 +338,10 @@ rm -rf %{buildroot}
 %{_bindir}/passenger*
 %dir %attr(755, root, root) %{_localstatedir}/run/passenger-instreg
 %{passenger_libdir}
-%{passenger_archdir}
 %{passenger_agentsdir}
 %{_sbindir}/*
 %{_mandir}/man1/*
 %{_mandir}/man8/*
-/usr/share/ruby/vendor_ruby/passenger/passenger_native_support.so
 
 %files doc
 %doc %{_docdir}/passenger
