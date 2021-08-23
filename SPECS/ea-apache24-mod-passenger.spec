@@ -6,7 +6,6 @@
 %global passenger_libdir    %{_datadir}/passenger
 %global passenger_archdir   %{_libdir}/passenger
 %global passenger_agentsdir %{_libexecdir}/passenger
-%define ruby_vendorlibdir   %(ruby -rrbconfig -e 'puts RbConfig::CONFIG[%q|vendorlibdir|]')
 
 # Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4590 for more details
 %define release_prefix 1
@@ -53,9 +52,6 @@ BuildRequires: ea-apr-util
 BuildRequires: ea-apr-util-devel
 
 BuildRequires: ea-passenger-src
-
-# NOTE: openssl is not needed for the deliverables only the
-# building
 
 BuildRequires: ea-apache24-devel
 %if 0%{?rhel} < 8
@@ -158,7 +154,6 @@ echo _localstatedir       %{_localstatedie}
 echo passenger_libdir     %{passenger_libdir}
 echo passenger_archdir    %{passenger_archdir}
 echo passenger_agentsdir  %{passenger_agentsdir}
-echo ruby_vendorlibdir    %{ruby_vendorlibdir}
 echo _sbindir             %{_sbindir}
 echo _mandir              %{_mandir}
 
@@ -223,7 +218,6 @@ cd $MYPWD
 %install
 set -x
 
-MYPWD=`pwd`
 echo "INSTALL BEGINS" `pwd`
 
 cd passenger-release-%{version}
@@ -328,8 +322,6 @@ rm -rf /usr/src/debug/build-id/*
 rm -rf /usr/src/debug/passenger-release-%{version}
 
 rm -rf %{buildroot}%{passenger_archdir}/passenger_native_support.so
-
-cd $MYPWD
 
 %clean
 rm -rf %{buildroot}
