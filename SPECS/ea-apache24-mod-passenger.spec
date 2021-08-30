@@ -150,12 +150,19 @@ echo _httpd_moddir        %{_httpd_moddir}
 echo SOURCE1             %{SOURCE1}
 echo SOURCE2             %{SOURCE2}
 echo _bindir              %{_bindir}
-echo _localstatedir       %{_localstatedie}
+echo _localstatedir       %{_localstatedir}
 echo passenger_libdir     %{passenger_libdir}
 echo passenger_archdir    %{passenger_archdir}
 echo passenger_agentsdir  %{passenger_agentsdir}
+
 echo _sbindir             %{_sbindir}
 echo _mandir              %{_mandir}
+echo _datadir             %{_datadir}
+echo _docdir              %{_docdir}
+echo _libdir              %{_libdir}
+echo _libexecdir          %{_libexecdir}
+echo _prefix              %{_prefix}
+echo _sysconfdir          %{_sysconfdir}
 
 mkdir -p build/support/vendor/cxx_hinted_parser
 
