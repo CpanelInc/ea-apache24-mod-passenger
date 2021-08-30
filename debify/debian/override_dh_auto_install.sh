@@ -115,8 +115,6 @@ cp ./passenger-release-$version/LICENSE $DEB_INSTALL_ROOT/opt/cpanel/ea-apache24
 mkdir -p $DEB_INSTALL_ROOT/usr/share/doc/ea-apache24-mod-passenger-doc-$version
 cp $DEB_INSTALL_ROOT/opt/cpanel/ea-apache24/root/usr/share/doc/ea-apache24-mod-passenger-doc-$version/* $DEB_INSTALL_ROOT/usr/share/doc/ea-apache24-mod-passenger-doc-$version
 
-find / -name "config_options.rb.disablehtaccess" -print 2> /dev/null
-
 echo "FILELIST :$DEB_INSTALL_ROOT:"
 find . -type f -print | sort
 
