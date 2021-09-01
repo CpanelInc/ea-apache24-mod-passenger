@@ -1,0 +1,35 @@
+<Location "[% data.base_uri %]">
+    [%- IF data.envvars.size %]
+    <IfModule mod_env.c>
+        [%- FOREACH name IN data.envvars.keys.sort %]
+        SetEnv "[% name %]" "[% data.envvars.$name %]"
+        [%- END %]
+    </IfModule>
+    [% END -%]
+
+    <IfModule mod_passenger.c>
+        PassengerAppEnv "[% data.deployment_mode %]"
+
+        PassengerEnabled on
+        PassengerBaseURI "[% data.base_uri %]"
+        PassengerAppRoot "[% data.path %]"
+        PassengerAppGroupName "[% data.cpuser _ ' - ' _ data.name %]"
+        [%- IF data.ruby %]
+        PassengerRuby [% data.ruby %]
+        [%- END %]
+        [%- IF data.python %]
+        PassengerPython [% data.python %]
+        [%- END %]
+        [%- IF data.nodejs %]
+        PassengerNodejs [% data.nodejs %]
+        [%- ELSE %]
+        PassengerNodejs /opt/cpanel/ea-nodejs10/bin/node
+        [%- END %]
+    </IfModule>
+</Location>
+<Directory "[% data.path %]">
+    Allow from all
+    Options -MultiViews
+    Options -Indexes
+    Require all granted
+</Directory>
