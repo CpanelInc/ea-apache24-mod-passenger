@@ -328,8 +328,6 @@ cp $BUILD/CHANGELOG .
 rm -rf /usr/src/debug/build-id/*
 rm -rf /usr/src/debug/passenger-release-%{version}
 
-rm -rf %{buildroot}%{passenger_archdir}/passenger_native_support.so
-
 %clean
 rm -rf %{buildroot}
 
@@ -349,6 +347,7 @@ rm -rf %{buildroot}
 %{_sbindir}/*
 %{_mandir}/man1/*
 %{_mandir}/man8/*
+%{passenger_archdir}/passenger_native_support.so
 
 %files doc
 %doc %{_docdir}/passenger
