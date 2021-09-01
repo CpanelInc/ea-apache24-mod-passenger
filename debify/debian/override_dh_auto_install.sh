@@ -91,7 +91,6 @@ cp $BUILD/CONTRIBUTORS .
 cp $BUILD/CHANGELOG .
 rm -rf /usr/src/debug/build-id/*
 rm -rf /usr/src/debug/passenger-release-$version
-rm -rf $DEB_INSTALL_ROOT$passenger_archdir/passenger_native_support.so
 
 mkdir -p $DEB_INSTALL_ROOT/etc
 mkdir -p $DEB_INSTALL_ROOT/usr/bin

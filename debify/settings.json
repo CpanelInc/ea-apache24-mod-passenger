@@ -63,6 +63,9 @@
         "libk5crypto3",
         "libkrb5support0"
     ],
+    "add_to_requires": {
+        "ea-apache24-mod-passenger": [ "ruby-rack" ]
+    },
     "dont_relativise_ontar": 1,
     "remove_from_install": [
         "disablehtaccess$"
