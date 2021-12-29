@@ -8,7 +8,7 @@
 %global passenger_agentsdir %{_libexecdir}/passenger
 
 # Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4590 for more details
-%define release_prefix 2
+%define release_prefix 3
 
 %global _httpd_mmn         %(cat %{_includedir}/apache2/.mmn 2>/dev/null || echo missing-ea-apache24-devel)
 %global _httpd_confdir     %{_sysconfdir}/apache2/conf.d
@@ -357,6 +357,9 @@ rm -rf %{buildroot}
 %doc /opt/cpanel/ea-apache24/root/usr/share/doc/ea-apache24-mod-passenger-doc-%{version}/CHANGELOG
 
 %changelog
+* Wed Dec 29 2021 Dan Muey <dan@cpanel.net> - 6.0.10-3
+- ZC-9616: disable OBS debuginfo flag for C6 and C7
+
 * Tue Dec 28 2021 Dan Muey <dan@cpanel.net> - 6.0.10-2
 - ZC-9589: Update DISABLE_BUILD to match OBS
 
