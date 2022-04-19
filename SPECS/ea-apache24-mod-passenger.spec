@@ -20,7 +20,7 @@
 
 Summary: Phusion Passenger application server
 Name: ea-apache24-mod-passenger
-Version: 6.0.10
+Version: 6.0.13
 Release: %{release_prefix}%{?dist}.cpanel
 Group: System Environment/Daemons
 # Passenger code uses MIT license.
@@ -110,12 +110,12 @@ License: CC-BY-SA and MIT and (MIT or GPL+)
 This package contains documentation files for Phusion Passenger(r).
 
 %prep
-set -x 
+set -x
 cp -rf /opt/cpanel/ea-passenger-src/passenger-*/ .
 
 %build
 
-set -x 
+set -x
 
 MYPWD=`pwd`
 rm -rf %{buildroot}
@@ -357,6 +357,9 @@ rm -rf %{buildroot}
 %doc /opt/cpanel/ea-apache24/root/usr/share/doc/ea-apache24-mod-passenger-doc-%{version}/CHANGELOG
 
 %changelog
+* Wed Apr 19 2022 Cory McIntire <cory@cpanel.net> - 6.0.13-1
+- EA-10653: update version to match ea-passenger-src
+
 * Wed Dec 29 2021 Dan Muey <dan@cpanel.net> - 6.0.10-3
 - ZC-9616: disable OBS debuginfo flag for C6 and C7
 
