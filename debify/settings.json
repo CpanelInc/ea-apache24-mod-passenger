@@ -47,7 +47,8 @@
         "ruby-devel",
         "brotli-devel",
         "rubygem-rake",
-        "rubygem-rake-compiler"
+        "rubygem-rake-compiler",
+        "krb5-libs"
     ],
     "add_to_build_requires": [
         "ruby-dev",
