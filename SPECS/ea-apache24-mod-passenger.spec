@@ -8,7 +8,7 @@
 %global passenger_agentsdir %{_libexecdir}/passenger
 
 # Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4590 for more details
-%define release_prefix 1
+%define release_prefix 2
 
 %global _httpd_mmn         %(cat %{_includedir}/apache2/.mmn 2>/dev/null || echo missing-ea-apache24-devel)
 %global _httpd_confdir     %{_sysconfdir}/apache2/conf.d
@@ -33,8 +33,6 @@ URL: https://www.phusionpassenger.com
 
 Source1: apache-passenger.conf.in
 Source2: passenger_apps.default
-
-BuildRequires: tree
 
 BuildRequires: ea-apache24-devel
 BuildRequires: ruby
@@ -68,6 +66,11 @@ BuildRequires: libcurl
 BuildRequires: libcurl-devel
 BuildRequires: openssl
 BuildRequires: openssl-devel
+%endif
+
+%if 0%{?rhel} == 9
+BuildRequires: krb5-libs krb5-devel
+Requires: krb5-libs
 %endif
 
 Requires: python3
@@ -357,6 +360,9 @@ rm -rf %{buildroot}
 %doc /opt/cpanel/ea-apache24/root/usr/share/doc/ea-apache24-mod-passenger-doc-%{version}/CHANGELOG
 
 %changelog
+* Thu Sep 29 2022 Julian Brown <julian.brown@cpanel.net> - 6.0.15-2
+- ZC-10009: Add changes so that it builds on AlmaLinux 9
+
 * Wed Sep 21 2022 Cory McIntire <cory@cpanel.net> - 6.0.15-1
 - EA-10945: ea-passenger-src was updated from v6.0.14 to v6.0.15
 
