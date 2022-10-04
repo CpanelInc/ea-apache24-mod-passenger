@@ -221,7 +221,12 @@ rake fakeroot \
 
 # find python and ruby scripts to change their shebang
 
+
+%if 0%{?rhel} < 8
 find . -name "*.py" -print | xargs sed -i '1s:^#!.*python.*$:#!/usr/bin/python2:'
+%else
+find . -name "*.py" -print | xargs sed -i '1s:^#!.*python.*$:#!/usr/bin/python3:'
+%endif
 
 cd $MYPWD
 
