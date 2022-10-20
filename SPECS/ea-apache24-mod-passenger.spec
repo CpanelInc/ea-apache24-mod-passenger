@@ -8,7 +8,7 @@
 %global passenger_agentsdir %{_libexecdir}/passenger
 
 # Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4590 for more details
-%define release_prefix 2
+%define release_prefix 3
 
 %global _httpd_mmn         %(cat %{_includedir}/apache2/.mmn 2>/dev/null || echo missing-ea-apache24-devel)
 %global _httpd_confdir     %{_sysconfdir}/apache2/conf.d
@@ -33,6 +33,7 @@ URL: https://www.phusionpassenger.com
 
 Source1: apache-passenger.conf.in
 Source2: passenger_apps.default
+Source3: pkg.preinst
 
 BuildRequires: ea-apache24-devel
 BuildRequires: ruby
@@ -152,6 +153,7 @@ echo _httpd_modconfdir    %{_httpd_modconfdir}
 echo _httpd_moddir        %{_httpd_moddir}
 echo SOURCE1             %{SOURCE1}
 echo SOURCE2             %{SOURCE2}
+echo SOURCE3             %{SOURCE3}
 echo _bindir              %{_bindir}
 echo _localstatedir       %{_localstatedir}
 echo passenger_libdir     %{passenger_libdir}
@@ -339,6 +341,9 @@ rm -rf /usr/src/debug/passenger-release-%{version}
 %clean
 rm -rf %{buildroot}
 
+%pre
+%include %{SOURCE3}
+
 %files
 %config(noreplace) %{_httpd_modconfdir}/*.conf
 %if "%{_httpd_modconfdir}" != "%{_httpd_confdir}"
@@ -365,6 +370,9 @@ rm -rf %{buildroot}
 %doc /opt/cpanel/ea-apache24/root/usr/share/doc/ea-apache24-mod-passenger-doc-%{version}/CHANGELOG
 
 %changelog
+* Thu Oct 20 2022 Tim Mullin <tim@cpanel.net> - 6.0.15-3
+- EA-10997: Fix Passenger instance registry directory on Ubuntu
+
 * Thu Sep 29 2022 Julian Brown <julian.brown@cpanel.net> - 6.0.15-2
 - ZC-10009: Add changes so that it builds on AlmaLinux 9
 
