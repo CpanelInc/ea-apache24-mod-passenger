@@ -1,0 +1,5 @@
+#!/bin/bash
+
+if [ "$1" = "upgrade" ] ; then    
+    mkdir -p ${_localstatedir}/run/passenger-instreg
+fi
