@@ -8,7 +8,7 @@
 %global passenger_agentsdir %{_libexecdir}/passenger
 
 # Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4590 for more details
-%define release_prefix 3
+%define release_prefix 4
 
 %global _httpd_mmn         %(cat %{_includedir}/apache2/.mmn 2>/dev/null || echo missing-ea-apache24-devel)
 %global _httpd_confdir     %{_sysconfdir}/apache2/conf.d
@@ -370,6 +370,9 @@ rm -rf %{buildroot}
 %doc /opt/cpanel/ea-apache24/root/usr/share/doc/ea-apache24-mod-passenger-doc-%{version}/CHANGELOG
 
 %changelog
+* Tue Nov 01 2022 Tim Mullin <tim@cpanel.net> - 6.0.15-4
+- EA-11018: Fix Passenger instance registry directory for fresh installs
+
 * Thu Oct 20 2022 Tim Mullin <tim@cpanel.net> - 6.0.15-3
 - EA-10997: Fix Passenger instance registry directory on Ubuntu
 
