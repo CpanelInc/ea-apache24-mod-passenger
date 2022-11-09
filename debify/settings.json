@@ -26,7 +26,7 @@
         "_httpd_confdir": "%{_httpd_dir}/conf.d",
         "_httpd_contentdir": "/usr/share/apache2",
         "_httpd_moddir": "/usr/lib64/apache2/modules",
-        "_localstatedir": "/var",
+        "_localstatedir": "/opt/cpanel/ea-passenger",
         "__perl": "/usr/bin/perl",
         "vmmn": "",
         "ea_apr_config": "/opt/cpanel/ea-apr16/bin/apr-1-config",
@@ -47,7 +47,8 @@
         "ruby-devel",
         "brotli-devel",
         "rubygem-rake",
-        "rubygem-rake-compiler"
+        "rubygem-rake-compiler",
+        "krb5-libs"
     ],
     "add_to_build_requires": [
         "ruby-dev",
