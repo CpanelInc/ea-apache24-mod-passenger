@@ -20,7 +20,7 @@
 
 Summary: Phusion Passenger application server
 Name: ea-apache24-mod-passenger
-Version: 6.0.16
+Version: 6.0.17
 Release: %{release_prefix}%{?dist}.cpanel
 Group: System Environment/Daemons
 # Passenger code uses MIT license.
@@ -370,6 +370,9 @@ rm -rf %{buildroot}
 %doc /opt/cpanel/ea-apache24/root/usr/share/doc/ea-apache24-mod-passenger-doc-%{version}/CHANGELOG
 
 %changelog
+* Sun Jan 29 2023 Cory McIntire <cory@cpanel.net> - 6.0.17-1
+- EA-11187: ea-passenger-src was updated from v6.0.16 to v6.0.17
+
 * Wed Dec 21 2022 Cory McIntire <cory@cpanel.net> - 6.0.16-1
 - EA-11116: ea-passenger-src was updated from v6.0.15 to v6.0.16
 
