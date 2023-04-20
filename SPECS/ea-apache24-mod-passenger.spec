@@ -8,7 +8,7 @@
 %global passenger_agentsdir %{_libexecdir}/passenger
 
 # Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4590 for more details
-%define release_prefix 1
+%define release_prefix 2
 
 %global _httpd_mmn         %(cat %{_includedir}/apache2/.mmn 2>/dev/null || echo missing-ea-apache24-devel)
 %global _httpd_confdir     %{_sysconfdir}/apache2/conf.d
@@ -17,6 +17,8 @@
 
 %define ea_openssl_ver 1.1.1d-1
 %define ea_libcurl_ver 7.68.0-2
+
+%define passenger_instance_registry_dir_prefix /opt/cpanel/ea-passenger
 
 Summary: Phusion Passenger application server
 Name: ea-apache24-mod-passenger
@@ -264,7 +266,7 @@ mkdir -p %{buildroot}%{_httpd_confdir} %{buildroot}%{_httpd_modconfdir}
 sed -e 's|@PASSENGERROOT@|%{passenger_libdir}/phusion_passenger/locations.ini|g' %{SOURCE1} > passenger.conf
 sed -i 's|@PASSENGERDEFAULTRUBY@|/usr/bin/ruby|g' passenger.conf
 sed -i 's|@PASSENGERSO@|%{_httpd_moddir}/mod_passenger.so|g' passenger.conf
-sed -i 's|@PASSENGERINSTANCEDIR@|%{_localstatedir}/run/passenger-instreg|g' passenger.conf
+sed -i 's|@PASSENGERINSTANCEDIR@|%{passenger_instance_registry_dir_prefix}/run/passenger-instreg|g' passenger.conf
 
 mkdir -p %{buildroot}/var/cpanel/templates/apache2_4
 # keep version agnostic name for old ULCs :(
@@ -295,7 +297,7 @@ sed -i 's|%{passenger_archdir}/support-binaries|%{passenger_agentsdir}|g' \
     %{buildroot}%{passenger_libdir}/phusion_passenger/locations.ini
 
 # Instance registry to track apps
-mkdir -p %{buildroot}%{_localstatedir}/run/passenger-instreg
+mkdir -p %{buildroot}%{passenger_instance_registry_dir_prefix}/run/passenger-instreg
 
 # Install man pages into the proper location.
 mkdir -p %{buildroot}%{_mandir}/man1
@@ -354,7 +356,7 @@ rm -rf %{buildroot}
 /var/cpanel/templates/apache2_4/rubyby-mod_passenger.appconf.default
 %{_httpd_moddir}/mod_passenger.so
 %{_bindir}/passenger*
-%dir %attr(755, root, root) %{_localstatedir}/run/passenger-instreg
+%dir %attr(755, root, root) %{passenger_instance_registry_dir_prefix}/run/passenger-instreg
 %{passenger_libdir}
 %{passenger_agentsdir}
 %{_sbindir}/*
@@ -370,6 +372,9 @@ rm -rf %{buildroot}
 %doc /opt/cpanel/ea-apache24/root/usr/share/doc/ea-apache24-mod-passenger-doc-%{version}/CHANGELOG
 
 %changelog
+* Thu Apr 20 2023 Travis Holloway <t.holloway@cpanel.net> - 6.0.17-2
+- EA-11368: Change PassengerInstanceRegistryDir to '/opt/cpanel/ea-passenger/run/passenger-instreg'
+
 * Sun Jan 29 2023 Cory McIntire <cory@cpanel.net> - 6.0.17-1
 - EA-11187: ea-passenger-src was updated from v6.0.16 to v6.0.17
 
