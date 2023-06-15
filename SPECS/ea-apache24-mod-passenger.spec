@@ -6,7 +6,7 @@
 %global passenger_agentsdir %{_libexecdir}/passenger
 
 # Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4590 for more details
-%define release_prefix 3
+%define release_prefix 1
 
 %global _httpd_mmn         %(cat %{_includedir}/apache2/.mmn 2>/dev/null || echo missing-ea-apache24-devel)
 %global _httpd_confdir     %{_sysconfdir}/apache2/conf.d
@@ -20,7 +20,7 @@
 
 Summary: Phusion Passenger application server
 Name: ea-apache24-mod-passenger
-Version: 6.0.17
+Version: 6.0.18
 Release: %{release_prefix}%{?dist}.cpanel
 Group: System Environment/Daemons
 # Passenger code uses MIT license.
@@ -370,6 +370,9 @@ rm -rf %{buildroot}
 %doc /opt/cpanel/ea-apache24/root/usr/share/doc/ea-apache24-mod-passenger-doc-%{version}/CHANGELOG
 
 %changelog
+* Thu Jun 15 2023 Cory McIntire <cory@cpanel.net> - 6.0.18-1
+- EA-11497: ea-passenger-src was updated from v6.0.17 to v6.0.18
+
 * Wed May 17 2023 Dan Muey <dan@cpanel.net> - 6.0.17-3
 - ZC-10938: Remove i586 cruft && DISABLE_DEBUGINFO from Makefile, remove debug_package && fix spec date that breaks build
 
