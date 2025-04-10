@@ -44,13 +44,18 @@ BuildRequires: perl
 BuildRequires: curl
 BuildRequires: python3
 BuildRequires: zlib-devel
-BuildRequires: pcre-devel
 BuildRequires: ea-apr
 BuildRequires: ea-apr-devel
 BuildRequires: ea-apr-util
 BuildRequires: ea-apr-util-devel
 
 BuildRequires: ea-passenger-src
+
+%if 0%{?rhel} >= 10
+BuildRequires: pcre2-devel
+%else
+BuildRequires: pcre-devel >= 5.0
+%endif
 
 BuildRequires: ea-apache24-devel
 %if 0%{?rhel} < 8
