@@ -6,7 +6,7 @@
 %global passenger_agentsdir %{_libexecdir}/passenger
 
 # Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4590 for more details
-%define release_prefix 1
+%define release_prefix 2
 
 %global _httpd_mmn         %(cat %{_includedir}/apache2/.mmn 2>/dev/null || echo missing-ea-apache24-devel)
 %global _httpd_confdir     %{_sysconfdir}/apache2/conf.d
@@ -34,6 +34,7 @@ URL: https://www.phusionpassenger.com
 Source1: apache-passenger.conf.in
 Source2: passenger_apps.default
 Source3: pkg.preinst
+Patch4: 0004-Fix-AlmaLinux-10-build-add-host-flag-support-for-lib.patch
 
 BuildRequires: ea-apache24-devel
 BuildRequires: ruby
@@ -121,10 +122,19 @@ This package contains documentation files for Phusion Passenger(r).
 %prep
 set -x
 cp -rf /opt/cpanel/ea-passenger-src/passenger-*/ .
+%if 0%{?rhel} >= 10
+cd passenger-release-%{version}
+%patch4 -p1
+cd ..
+%endif
 
 %build
 
 set -x
+
+%if 0%{?rhel} >= 10
+export LIBEV_CONFIGURE_HOST=x86_64-redhat-linux-gnu
+%endif
 
 MYPWD=`pwd`
 rm -rf %{buildroot}
@@ -374,6 +384,9 @@ rm -rf %{buildroot}
 %doc /opt/cpanel/ea-apache24/root/usr/share/doc/ea-apache24-mod-passenger-doc-%{version}/CHANGELOG
 
 %changelog
+* Mon Nov 17 2025 Cory McIntire <cory.mcintire@webpros.com> - 6.1.0-2
+- EA4-94: Fix AlmaLinux 10 build using patch for --host flag support
+
 * Tue Oct 07 2025 Cory McIntire <cory.mcintire@webpros.com> - 6.1.0-1
 - EA-13128: ea-passenger-src was updated from v6.0.27 to v6.1.0
 
