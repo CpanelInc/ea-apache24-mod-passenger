@@ -34,7 +34,7 @@ URL: https://www.phusionpassenger.com
 Source1: apache-passenger.conf.in
 Source2: passenger_apps.default
 Source3: pkg.preinst
-Patch4: 0004-Fix-AlmaLinux-10-build-add-host-flag-support-for-lib.patch
+Patch1: 0001-Fix-AlmaLinux-10-build-add-host-flag-support-for-lib.patch
 
 BuildRequires: ea-apache24-devel
 BuildRequires: ruby
@@ -123,9 +123,7 @@ This package contains documentation files for Phusion Passenger(r).
 set -x
 cp -rf /opt/cpanel/ea-passenger-src/passenger-*/ .
 %if 0%{?rhel} >= 10
-cd passenger-release-%{version}
-%patch4 -p1
-cd ..
+%patch1 -p1 -d passenger-release-%{version}
 %endif
 
 %build
