@@ -74,7 +74,7 @@ BuildRequires: openssl
 BuildRequires: openssl-devel
 %endif
 
-%if 0%{?rhel} == 9
+%if 0%{?rhel} >= 9
 BuildRequires: krb5-libs krb5-devel
 Requires: krb5-libs
 %endif
