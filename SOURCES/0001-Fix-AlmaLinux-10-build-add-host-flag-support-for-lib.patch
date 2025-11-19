@@ -1,0 +1,48 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Cory McIntire <cory.mcintire@webpros.com>
+Date: Mon, 17 Nov 2025 16:14:19 -0600
+Subject: [PATCH] Fix AlmaLinux 10 build: add --host flag support for
+ libev/libuv configure
+
+---
+ build/common_library.rb | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/build/common_library.rb b/build/common_library.rb
+index 4a1528e..a9f0ff0 100644
+--- a/build/common_library.rb
++++ b/build/common_library.rb
+@@ -131,6 +131,7 @@ def define_libboost_oxt_task(namespace, output_dir, extra_compiler_flags = nil)
+   ]
+   file LIBEV_OUTPUT_DIR + "Makefile" => dependencies do
+     cc_command = cc
++    host_flag = ENV["LIBEV_CONFIGURE_HOST"] ? "--host=#{ENV["LIBEV_CONFIGURE_HOST"]}" : ""
+     cxx_command = cxx
+     if OPTIMIZE && LTO
+       cc_command = "#{cc_command} -flto"
+@@ -139,7 +140,7 @@ def define_libboost_oxt_task(namespace, output_dir, extra_compiler_flags = nil)
+     # Disable all warnings: http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod#COMPILER_WARNINGS
+     cflags = "#{extra_cflags} -w"
+     sh "mkdir -p #{LIBEV_OUTPUT_DIR}" if !File.directory?(LIBEV_OUTPUT_DIR)
+-    sh "cd #{LIBEV_OUTPUT_DIR} && sh #{LIBEV_SOURCE_DIR}configure " +
++    sh "cd #{LIBEV_OUTPUT_DIR} && sh #{LIBEV_SOURCE_DIR}configure #{host_flag} " +
+       "--disable-shared --enable-static " +
+       # libev's configure script may select a different default compiler than we
+       # do, so we force our compiler choice.
+@@ -202,6 +203,7 @@ def define_libboost_oxt_task(namespace, output_dir, extra_compiler_flags = nil)
+   file LIBUV_OUTPUT_DIR + "Makefile" => dependencies do
+     cc_command = cc
+     cxx_command = cxx
++    host_flag = ENV["LIBEV_CONFIGURE_HOST"] ? "--host=#{ENV["LIBEV_CONFIGURE_HOST"]}" : ""
+     if OPTIMIZE && LTO
+       cc_command = "#{cc_command} -flto"
+       cxx_command = "#{cxx_command} -flto"
+@@ -212,7 +214,7 @@ def define_libboost_oxt_task(namespace, output_dir, extra_compiler_flags = nil)
+     sh "mkdir -p #{LIBUV_OUTPUT_DIR}" if !File.directory?(LIBUV_OUTPUT_DIR)
+     # Prevent 'make' from regenerating autotools files
+     sh "cd #{LIBUV_SOURCE_DIR} && (touch aclocal.m4 configure Makefile.in || true)"
+-    sh "cd #{LIBUV_OUTPUT_DIR} && sh #{LIBUV_SOURCE_DIR}configure " +
++    sh "cd #{LIBUV_OUTPUT_DIR} && sh #{LIBUV_SOURCE_DIR}configure #{host_flag} " +
+       "--disable-shared --enable-static " +
+       # libuv's configure script may select a different default compiler than we
+       # do, so we force our compiler choice.
