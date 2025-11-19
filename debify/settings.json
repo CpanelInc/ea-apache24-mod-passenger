@@ -70,6 +70,9 @@
     "dont_relativise_ontar": 1,
     "remove_from_install": [
         "disablehtaccess$"
+    ],
+    "remove_from_patches": [
+        "0001-Fix-AlmaLinux-10-build-add-host-flag-support-for-lib.patch"
     ]
 }
 
