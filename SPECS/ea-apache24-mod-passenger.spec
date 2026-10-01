@@ -125,7 +125,9 @@ This package contains documentation files for Phusion Passenger(r).
 
 %prep
 set -x
-cp -rf /opt/cpanel/ea-passenger-src/passenger-*/ .
+# Keep the shipped mtimes: restamped in copy order, a header can look newer than its
+# generated code and rake then regenerates it, which needs the unvendored cxx_hinted_parser.
+cp -rf --preserve=timestamps /opt/cpanel/ea-passenger-src/passenger-*/ .
 
 %build
 
