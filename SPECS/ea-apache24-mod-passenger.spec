@@ -54,7 +54,7 @@ BuildRequires: ea-apr-util-devel
 # installs. Without a floor, a build can satisfy this from an older ea-passenger-src
 # and produce a release-bumped RPM containing an unpatched agent, indistinguishable
 # from a fixed one.
-BuildRequires: ea-passenger-src >= 6.1.8-2
+BuildRequires: ea-passenger-src >= 6.2.0
 
 %if 0%{?rhel} >= 10
 BuildRequires: pcre2-devel
