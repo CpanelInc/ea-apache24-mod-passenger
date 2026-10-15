@@ -6,7 +6,7 @@
 %global passenger_agentsdir %{_libexecdir}/passenger
 
 # Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4590 for more details
-%define release_prefix 1
+%define release_prefix 2
 
 %global _httpd_mmn         %(cat %{_includedir}/apache2/.mmn 2>/dev/null || echo missing-ea-apache24-devel)
 %global _httpd_confdir     %{_sysconfdir}/apache2/conf.d
@@ -54,7 +54,7 @@ BuildRequires: ea-apr-util-devel
 # installs. Without a floor, a build can satisfy this from an older ea-passenger-src
 # and produce a release-bumped RPM containing an unpatched agent, indistinguishable
 # from a fixed one.
-BuildRequires: ea-passenger-src >= 6.2.0
+BuildRequires: ea-passenger-src >= 6.2.0-3
 
 %if 0%{?rhel} >= 10
 BuildRequires: pcre2-devel
@@ -385,6 +385,9 @@ rm -rf %{buildroot}
 %doc /opt/cpanel/ea-apache24/root/usr/share/doc/ea-apache24-mod-passenger-doc-%{version}/CHANGELOG
 
 %changelog
+* Thu Oct 15 2026 Cory McIntire <cory.mcintire@webpros.com> - 6.2.0-2
+- EA-13596: Rebuild against ea-passenger-src 6.2.0-3 so patch backup files are no longer shipped
+
 * Thu Oct 01 2026 Cory McIntire <cory.mcintire@webpros.com> - 6.2.0-1
 - EA-13533: ea-passenger-src was updated from v6.1.8 to v6.2.0
 
